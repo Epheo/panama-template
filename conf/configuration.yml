@@ -2,18 +2,34 @@
 ## PANAMA: Services Configuration Definition ##
 ###############################################
 
+# All this variables will be passed as environment
+# variables to the containers.
+
 template_vars:
     HOST_NAME: your_host_name
-    HOST_IP: your_host_ip
-    RABBITMQ_HOST: your_host_ip
-    MYSQL_DB: your_host_ip
-    #For one node installation all the hosts are your IP
+    HOST_IP: 16.49.35.41
+    RABBITMQ_HOST: 16.49.35.41
+    MYSQL_DB: 16.49.35.41
+    EMAIL_ADDRESS: example.com
     MYSQL_USER: admin
     MYSQL_PASSWORD: password
-    RABBITMQ_PASSWORD: password
-    GLANCE_DBPASS: password
-    ADMIN_TOKEN: password
-    KEYSTONE_DBPASS: password
-    NOVA_DBPASS: password
-    ADMIN_PASS: password
-
+    RABBIT_PASS: panamassword
+    KEYSTONE_DBPASS: panamassword
+    DEMO_PASS: panamassword
+    ADMIN_TOKEN: panamassword
+    ADMIN_PASS: panamassword
+    GLANCE_DBPASS: panamassword
+    GLANCE_PASS: panamassword
+    NOVA_DBPASS: panamassword
+    NOVA_PASS: panamassword
+    DASH_DBPASS: panamassword
+    CINDER_DBPASS: panamassword
+    CINDER_PASS: panamassword
+    NEUTRON_DBPASS: panamassword
+    NEUTRON_PASS: panamassword
+    HEAT_DBPASS: panamassword
+    HEAT_PASS: panamassword
+    CEILOMETER_DBPASS: panamassword
+    CEILOMETER_PASS: panamassword
+    TROVE_DBPASS: panamassword
+    TROVE_PASS: panamassword

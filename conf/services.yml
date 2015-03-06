@@ -1,6 +1,6 @@
-####################################################
+##############################################
 ## PANAMA: Services Architecture Definition ##
-####################################################
+##############################################
 
 glance:
   ports: 
@@ -8,8 +8,9 @@ glance:
     - 4324
   volumes: 
     '/var/log/supervisor': '/var/log/panama/glance'
-    '/etc/glance': '/var/lib/panama/glance/etc'
+    #'/etc/glance': '/var/lib/panama/glance/etc'
   privileged: false
+  priority: 50
 
 
 horizon:
@@ -18,8 +19,9 @@ horizon:
     - 11211 
   volumes:
     '/var/log/supervisor': '/var/log/panama/horizon'
-    '/etc/openstack-dashboard': '/var/lib/panama/horizon/etc'
+    #'/etc/openstack-dashboard': '/var/lib/panama/horizon/etc'
   privileged: false
+  priority: 60
 
 
 keystone:
@@ -28,8 +30,9 @@ keystone:
     - 5000
   volumes:
     '/var/log/supervisor': '/var/log/panama/keystone'
-    '/etc/keystone': '/var/lib/panama/keystone/etc'
+    #'/etc/keystone': '/var/lib/panama/keystone/etc'
   privileged: false
+  priority: 30
 
 
 mysql:
@@ -38,6 +41,7 @@ mysql:
   volumes:
     '/var/log/supervisor': '/var/log/panama/mysql'
   privileged: false
+  priority: 20
 
 
 nova:
@@ -46,8 +50,9 @@ nova:
     - 8775
   volumes:
     '/var/log/supervisor': '/var/log/panama/nova'
-    '/etc/nova': '/var/lib/panama/nova/etc'
+    #'/etc/nova': '/var/lib/panama/nova/etc'
   privileged: true
+  priority: 40
 
 
 rabbitmq:
@@ -55,7 +60,8 @@ rabbitmq:
     - 5672
     - 15672
   volumes:
-    '/var/log/supervisor': '/var/log/panama/rabbitmq'
-    '/etc/rabbitmq': '/var/lib/panama/rabbitmq/etc'
+    '/data/log': '/var/lib/rabbitmq/log'
+    '/data/mnesia': '/var/lib/rabbitmq/mnesia'
   privileged: false
+  priority: 10
 

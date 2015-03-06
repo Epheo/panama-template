@@ -1,4 +1,4 @@
-FROM ubuntu:14.04
+FROM panama/base:latest
 MAINTAINER Thibaut Lapierre <root@epheo.eu> 
 
 # Install packages

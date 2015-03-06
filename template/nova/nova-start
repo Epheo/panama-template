@@ -1,0 +1,50 @@
+#!/bin/bash
+echo "Setting up nova"
+
+service nova-api restart >/dev/null 2>&1
+service nova-cert restart >/dev/null 2>&1
+service nova-consoleauth restart >/dev/null 2>&1
+service nova-scheduler restart >/dev/null 2>&1
+service nova-conductor restart >/dev/null 2>&1
+service nova-novncproxy restart >/dev/null 2>&1
+
+echo "Removing nova DB..."
+rm /var/lib/nova/nova.sqlite
+
+echo "Updating conf file..."
+python3 /usr/local/bin/configparse.py
+
+
+echo "Restarting nova..."
+service nova-api restart >/dev/null 2>&1
+service nova-cert restart >/dev/null 2>&1
+service nova-consoleauth restart >/dev/null 2>&1
+service nova-scheduler restart >/dev/null 2>&1
+service nova-conductor restart >/dev/null 2>&1
+service nova-novncproxy restart >/dev/null 2>&1
+
+echo "Create database..."
+echo "=> Creating Nova database"
+echo "=> DB ${MYSQL_DB}"
+echo "=> User ${MYSQL_USER}"
+echo "=> Password ${MYSQL_PASSWORD}"
+
+mysql -h${MYSQL_DB} -u${MYSQL_USER} -p${MYSQL_PASSWORD} -e "CREATE DATABASE nova;"
+mysql -h${MYSQL_DB} -u${MYSQL_USER} -p${MYSQL_PASSWORD} -e "GRANT ALL PRIVILEGES ON nova.* TO 'nova'@'localhost' \
+IDENTIFIED BY '${NOVA_DBPASS}';"
+mysql -h${MYSQL_DB} -u${MYSQL_USER} -p${MYSQL_PASSWORD} -e "GRANT ALL PRIVILEGES ON nova.* TO 'nova'@'%' \
+IDENTIFIED BY '${NOVA_DBPASS}';"
+
+echo "Create database tables"
+su -s /bin/sh -c "nova-manage db sync" nova
+
+echo "Stopping nova..."
+service nova-api stop >/dev/null 2>&1
+service nova-cert stop >/dev/null 2>&1
+service nova-consoleauth stop >/dev/null 2>&1
+service nova-scheduler stop >/dev/null 2>&1
+service nova-conductor stop >/dev/null 2>&1
+service nova-novncproxy stop >/dev/null 2>&1
+
+echo "Starting nova using supervisord..."
+exec /usr/bin/supervisord -n

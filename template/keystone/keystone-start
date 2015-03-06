@@ -1,0 +1,37 @@
+#!/bin/bash
+
+echo "Setting up keystone..."
+
+service keystone start >/dev/null 2>&1
+
+echo "Removing keystone DB"
+rm /var/lib/keystone/keystone.db
+
+echo "Updating conf file..."
+python3 /usr/local/bin/configparse.py
+
+echo "Restarting keystone"
+service keystone restart >/dev/null 2>&1
+
+echo "Create database..."
+echo "=> Creating ${SERVICE} database"
+echo "=> DB ${MYSQL_DB}"
+echo "=> User ${MYSQL_USER}"
+echo "=> Password ${MYSQL_PASSWORD}"
+
+mysql -h${MYSQL_DB} -u${MYSQL_USER} -p${MYSQL_PASSWORD} -e "CREATE DATABASE keystone;"
+mysql -h${MYSQL_DB} -u${MYSQL_USER} -p${MYSQL_PASSWORD} -e "GRANT ALL PRIVILEGES ON keystone.* TO 'keystone'@'localhost' \
+IDENTIFIED BY '${KEYSTONE_DBPASS}';"
+mysql -h${MYSQL_DB} -u${MYSQL_USER} -p${MYSQL_PASSWORD} -e "GRANT ALL PRIVILEGES ON keystone.* TO 'keystone'@'${HOST_NAME}' \
+IDENTIFIED BY '${KEYSTONE_DBPASS}';"
+mysql -h${MYSQL_DB} -u${MYSQL_USER} -p${MYSQL_PASSWORD} -e "GRANT ALL PRIVILEGES ON keystone.* TO 'keystone'@'%' \
+IDENTIFIED BY '${KEYSTONE_DBPASS}'"
+
+echo "Create database tables"
+su -s /bin/sh -c "keystone-manage db_sync" keystone
+
+echo "Stopping keystone"
+service keystone stop >/dev/null 2>&1
+
+echo "Starting keystone using supervisord..."
+exec /usr/bin/supervisord -n

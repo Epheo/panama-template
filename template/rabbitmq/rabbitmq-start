@@ -1,0 +1,7 @@
+#!/bin/bash
+
+echo $RABBIT_PASS
+rabbitmqctl change_password guest ${RABBIT_PASS}
+ulimit -n 1024
+chown -R rabbitmq:rabbitmq /data
+exec rabbitmq-server $@

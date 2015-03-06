@@ -1,33 +1,21 @@
-FROM centos:latest
+FROM ubuntu:14.04
 MAINTAINER Thibaut Lapierre <root@epheo.eu>
 
+# HP intern specific Proxy configuration
+ENV http_proxy 	http://proxy.sdc.hp.com:8080/
+ENV https_proxy https://proxy.sdc.hp.com:8080/
+ENV no_proxy 	'gerrit.hpcloud.net'
+ENV HOME /root
+
+ADD 01proxies /etc/apt/apt.conf.d/01proxies
+
+
 # OpenStack Repo and packages
-RUN yum -y update
+RUN apt-get -y update
 
-RUN yum -y install mysql MySQL-python yum-plugin-priorities initscripts openssh-server
-RUN yum -y install http://repos.fedorapeople.org/repos/openstack/openstack-icehouse/rdo-release-icehouse-3.noarch.rpm
-RUN yum -y install epel-release
-RUN yum -y install openstack-utils openstack-selinux
+RUN apt-get -y install ubuntu-cloud-keyring
+RUN echo "deb http://ubuntu-cloud.archive.canonical.com/ubuntu trusty-updates/juno main" > /etc/apt/sources.list.d/cloudarchive-juno.list
 
-# Setup supervisord
-RUN yum -y install python-setuptools
-RUN easy_install pip
-RUN pip install supervisor
-RUN mkdir -p /var/log/supervisor
+RUN apt-get -y update && apt-get -y dist-upgrade
 
-# Setup sshd
-RUN mkdir -p /var/run/sshd && echo 'root:root' |chpasswd
-RUN mkdir -p /.ssh/
-ADD authorized_keys /.ssh/authorized_keys
-RUN chmod 600 /.ssh/authorized_keys
-RUN ssh-keygen -t rsa1  -N "" -f /etc/ssh/ssh_host_rsa_key
-RUN ssh-keygen -t dsa   -N "" -f /etc/ssh/ssh_host_dsa_key
-RUN ssh-keygen -t ecdsa -N "" -f /etc/ssh/ssh_host_ecdsa_key
-RUN sed -ri 's/UsePAM yes/#UsePAM yes/g' /etc/ssh/sshd_config
-RUN sed -ri 's/#UsePAM no/UsePAM no/g' /etc/ssh/sshd_config
-RUN sed -i s/"GSSAPIAuthentication yes"/"GSSAPIAuthentication no"/g /etc/ssh/sshd_config
-RUN echo "AuthorizedKeysFile /.ssh/authorized_keys" >> /etc/ssh/sshd_config
-EXPOSE 22
-
-RUN yum -y upgrade
-
+RUN apt-get -y install supervisor wget python-pip mysql-client mysql-common python-mysqldb

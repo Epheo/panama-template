@@ -1,0 +1,62 @@
+#!/bin/bash
+
+## KEYSTONE
+
+export OS_SERVICE_ENDPOINT=http://${HOST_IP}:35357/v2.0
+export OS_SERVICE_TOKEN=${ADMIN_TOKEN}
+
+echo "Creating Keystone user..."
+keystone user-create --name=keystone --pass=${KEYSTONE_PASS} --email=keystone@${EMAIL_ADDRESS}
+keystone user-role-add --user=keystone --tenant=service --role=admin
+
+echo "Create tenants, users, and roles..."
+keystone tenant-create --name admin --description "Admin Tenant"
+keystone user-create --name admin --pass ${ADMIN_PASS} --email admin@${EMAIL_ADDRESS}
+keystone role-create --name admin
+keystone user-role-add --user admin --tenant admin --role admin
+keystone tenant-create --name demo --description "Demo Tenant"
+keystone user-create --name demo --tenant demo --pass ${DEMO_PASS} --email demo@${EMAIL_ADDRESS}
+keystone tenant-create --name service --description "Service Tenant"
+
+echo "Registering Keystone API and EndPoints..."
+keystone service-create --name keystone --type identity \
+--description "OpenStack Identity"
+
+keystone endpoint-create \
+--service-id $(keystone service-list | awk '/ identity / {print $2}') \
+--publicurl http://${HOST_IP}::5000/v2.0 \
+--internalurl http://${HOST_IP}:5000/v2.0 \
+--adminurl http://${HOST_IP}:35357/v2.0 \
+--region regionOne
+
+## Tests
+
+# http://docs.openstack.org/juno/install-guide/install/apt/content/keystone-verify.html
+
+## GLANCE
+
+echo "Creating Glance user..."
+keystone user-create --name=glance --pass=${GLANCE_PASS} --email=glance@example.com
+keystone user-role-add --user=glance --tenant=service --role=admin
+
+echo "Registering Glance API and EndPoints..."
+keystone service-create --name=${SERVICE} --type=image --description="OpenStack Image Service"
+keystone endpoint-create --service-id=$(keystone service-list | awk '/ image / {print $2}') \
+--publicurl=http://${HOST_IP}:9292 \
+--internalurl=http://${HOST_IP}:9292 \
+--adminurl=http://${HOST_IP}:9292
+
+## Nova
+
+echo "Creating Nova user..."
+keystone user-create --name nova --pass ${NOVA_PASS}
+keystone user-role-add --user nova --tenant service --role admin
+
+echo "Registering Nova API and EndPoints..."
+keystone service-create --name nova --type compute --description "OpenStack Compute"
+keystone endpoint-create \
+--service-id $(keystone service-list | awk '/ compute / {print $2}') \
+--publicurl http://${HOST_IP}:8774/v2/%\(tenant_id\)s \
+--internalurl http://${HOST_IP}:8774/v2/%\(tenant_id\)s \
+--adminurl http://${HOST_IP}:8774/v2/%\(tenant_id\)s \
+--region regionOne
