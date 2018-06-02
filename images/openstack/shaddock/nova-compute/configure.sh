@@ -1,7 +1,7 @@
 #!/bin/bash
 
 echo "> Writing configuration files"
-cp /etc/nova.conf.sample /etc/nova/nova-compute.conf
+cp /etc/nova/nova.conf.sample /etc/nova/nova-compute.conf
 s='crudini --set /etc/nova/nova-compute.conf'
 
 $s DEFAULT enabled_apis osapi_compute,metadata

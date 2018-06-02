@@ -41,7 +41,7 @@ clusters:
           PATH: '/usr/bin:/bin:{{ venv_exec_path }}/keystone/bin'
           VIRTUAL_ENV: '{{ venv_exec_path }}/keystone/'
         command: 'keystone-wsgi-public --host 0.0.0.0 --port 5000'
-        
+
 
       # ------------------------------------------ Glance
       - name: glance-registry
@@ -85,7 +85,7 @@ clusters:
         volumes:
           - '{{ venv_build_path }}:{{ venv_build_path }}:ro'
           - '{{ venv_exec_path }}/nova:{{ venv_exec_path }}/nova:ro'
-          - '{{ venv_exec_path }}/nova/etc/nova:/etc/nova:rw'
+          - '{{ venv_exec_path }}/nova/etc/nova:/etc/nova:ro'
           - /var/log/shaddock/nova:/var/log/nova:rw
         depends-on:
           - {name: nova-configure, status: stopped}
@@ -101,7 +101,7 @@ clusters:
         volumes:
           - '{{ venv_build_path }}:{{ venv_build_path }}:ro'
           - '{{ venv_exec_path }}/nova:{{ venv_exec_path }}/nova:ro'
-          - '{{ venv_exec_path }}/nova/etc/nova:/etc/nova:rw'
+          - '{{ venv_exec_path }}/nova/etc/nova:/etc/nova:ro'
           - /var/log/shaddock/nova:/var/log/nova:rw
         depends-on:
           - {name: nova-configure, status: stopped}
@@ -116,7 +116,7 @@ clusters:
         volumes:
           - '{{ venv_build_path }}:{{ venv_build_path }}:ro'
           - '{{ venv_exec_path }}/nova:{{ venv_exec_path }}/nova:ro'
-          - '{{ venv_exec_path }}/nova/etc/nova:/etc/nova:rw'
+          - '{{ venv_exec_path }}/nova/etc/nova:/etc/nova:ro'
           - /var/log/shaddock/nova:/var/log/nova:rw
         depends-on:
           - {name: nova-configure, status: stopped}
@@ -132,7 +132,7 @@ clusters:
         volumes:
           - '{{ venv_build_path }}:{{ venv_build_path }}:ro'
           - '{{ venv_exec_path }}/nova:{{ venv_exec_path }}/nova:ro'
-          - '{{ venv_exec_path }}/nova/etc/nova:/etc/nova:rw'
+          - '{{ venv_exec_path }}/nova/etc/nova:/etc/nova:ro'
           - /var/log/shaddock/nova:/var/log/nova:rw
         depends-on:
           - {name: nova-configure, status: stopped}
@@ -147,7 +147,7 @@ clusters:
         volumes:
           - '{{ venv_build_path }}:{{ venv_build_path }}:ro'
           - '{{ venv_exec_path }}/nova:{{ venv_exec_path }}/nova:ro'
-          - '{{ venv_exec_path }}/nova/etc/nova:/etc/nova:rw'
+          - '{{ venv_exec_path }}/nova/etc/nova:/etc/nova:ro'
           - /var/log/shaddock/nova:/var/log/nova:rw
         depends-on:
           - {name: nova-configure, status: stopped}
@@ -164,7 +164,9 @@ clusters:
         volumes:
           - '{{ venv_build_path }}:{{ venv_build_path }}:ro'
           - '{{ venv_exec_path }}/neutron:{{ venv_exec_path }}/neutron:ro'
-          - '{{ openstack_path }}/etc/neutron:/etc/neutron:ro'
+          - '{{ venv_exec_path }}/neutron/etc:/etc/neutron:ro'
+          - '{{ venv_exec_path }}/neutron/etc/neutron/plugins:/etc/neutron/plugins:ro'
+          - '{{ venv_exec_path }}/neutron/etc/neutron/rootwrap.d:/etc/neutron/rootwrap.d:ro'
           - /var/log/shaddock/neutron:/var/log/neutron:rw
         depends-on:
           - {name: neutron-configure, status: stopped}
@@ -182,7 +184,7 @@ clusters:
         volumes:
           - '{{ venv_build_path }}:{{ venv_build_path }}:ro'
           - '{{ venv_exec_path }}/nova:{{ venv_exec_path }}/nova:ro'
-          - '{{ openstack_path }}/nova/etc/nova:/etc/nova:ro'
+          - '{{ venv_exec_path }}/nova/etc/nova:/etc/nova:ro'
           - /var/log/shaddock/nova:/var/log/nova:rw
         depends-on:
           - {name: rabbitmq, port: 5672}

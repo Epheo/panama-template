@@ -7,27 +7,29 @@ source /opt/openstack/osrc/service.osrc
 endpoint=`openstack endpoint list -f csv -q |grep neutron`
 if [ -z "$endpoint" ]
 then
-    echo "> Creating sql user and dat>abase"
-    mysql -h$MYSQL_VIP -u$MYSQL_USER -p$MYSQL_PASS \
+    echo "> Creating sql user and database"
+    mysql -h${MYSQL_VIP} -u${MYSQL_USER} -p${MYSQL_PASS} \
           -e "CREATE DATABASE neutron;"
-    mysql -h$MYSQL_VIP -u$MYSQL_USER -p$MYSQL_PASS \
+    mysql -h${MYSQL_VIP} -u${MYSQL_USER} -p${MYSQL_PASS} \
           -e "GRANT ALL PRIVILEGES ON neutron.* TO 'neutron'@'localhost' \
-              IDENTIFIED BY '$NEUTRON_DB_PASS';"
-    mysql -h$MYSQL_VIP -u$MYSQL_USER -p$MYSQL_PASS \
+              IDENTIFIED BY '${NEUTRON_DB_PASS}';"
+    mysql -h${MYSQL_VIP} -u${MYSQL_USER} -p${MYSQL_PASS} \
           -e "GRANT ALL PRIVILEGES ON neutron.* TO 'neutron'@'%' \
-              IDENTIFIED BY '$NEUTRON_DB_PASS';"
+              IDENTIFIED BY '${NEUTRON_DB_PASS}';"
 
     echo "Creating Neutron user..."
-    openstack user create --domain default --password $NEUTRON_PASS neutron
+    openstack user create --domain default --password ${NEUTRON_PASS} neutron
     openstack role add --project service --user neutron admin
-    openstack service ecreate --name neutron \
-                              --description "OpenStack Networking" network
-    openstack endpoint create --region RegionOne network public \
-                              http://$KEYSTONE_API_IP:9696
-    openstack endpoint create --region RegionOne network internal \
-                              http://$KEYSTONE_API_IP:9696
-    openstack endpoint create --region RegionOne network admin \
-                              http://$KEYSTONE_API_IP:9696
+
+    echo "> Creating service user and endpoints"
+    openstack service create --name neutron \
+        --description "OpenStack Networking" network
+    openstack endpoint create --region RegionOne \
+        network public http://${NEUTRON_VIP}:9696
+    openstack endpoint create --region RegionOne \
+        network internal http://${NEUTRON_VIP}:9696
+    openstack endpoint create --region RegionOne \
+        network admin http://${NEUTRON_VIP}:9696
   else
     if [[ $endpoint == *"ERROR"* ]]
     then
@@ -41,7 +43,6 @@ fi
 
 echo "> Writing configuration files"
 echo "> Using tox-generated config files"
-cp /etc/neutron/neutron/* /etc/neutron/
 
 echo "> Configure the metadata agent"
 cp /etc/neutron/metadata_agent.ini.sample /etc/neutron/metadata_agent.ini

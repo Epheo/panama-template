@@ -21,7 +21,7 @@ then
               IDENTIFIED BY '${GLANCE_DB_PASS}';"
     mysql -h${MYSQL_VIP} -u${MYSQL_USER} -p${MYSQL_PASS} \
           -e "GRANT ALL PRIVILEGES ON glance.* TO 'glance'@'%' \
-              IDENTIFIED BY '${GLANCE_DB_PASS}'"
+              IDENTIFIED BY '${GLANCE_DB_PASS}';"
 
     echo "> Creating Glance user"
     openstack user create --domain default --password ${GLANCE_PASS} glance

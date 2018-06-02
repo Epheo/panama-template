@@ -70,7 +70,7 @@ clusters:
           - '{{ venv_build_path }}:{{ venv_build_path }}:rw'
           - '{{ venv_exec_path }}/nova:{{ venv_exec_path }}/nova:rw'
           - '{{ venv_exec_path }}/python-openstackclient:{{ venv_exec_path }}/python-openstackclient:ro'
-          - '{{ openstack_path }}/nova/etc/nova:/etc/nova:rw'
+          - '{{ venv_exec_path }}/nova/etc/nova:/etc/nova:rw'
           - '{{ openstack_path }}/osrc:{{ openstack_path }}/osrc:ro'
         depends-on:
           - {name: mysql, port: 3306}
@@ -102,6 +102,8 @@ clusters:
           - '{{ venv_exec_path }}/neutron:{{ venv_exec_path }}/neutron:rw'
           - '{{ venv_exec_path }}/python-openstackclient:{{ venv_exec_path }}/python-openstackclient:ro'
           - '{{ venv_exec_path }}/neutron/etc:/etc/neutron:rw'
+          - '{{ venv_exec_path }}/neutron/etc/neutron/plugins:/etc/neutron/plugins:rw'
+          - '{{ venv_exec_path }}/neutron/etc/neutron/rootwrap.d:/etc/neutron/rootwrap.d:rw'
           - '{{ venv_exec_path }}/nova/etc/nova:/etc/nova:rw'
           - '{{ openstack_path }}/osrc:{{ openstack_path }}/osrc:ro'
         depends-on:

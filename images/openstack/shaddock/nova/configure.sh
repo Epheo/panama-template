@@ -73,7 +73,7 @@ fi
 
 
 echo "> Using tox-generated config files"
-cp /etc/nova.conf.sample /etc/nova/nova.conf
+cp /etc/nova/nova.conf.sample /etc/nova/nova.conf
 
 echo "> Writing configuration files"
 s='crudini --set /etc/nova/nova.conf' # substitute

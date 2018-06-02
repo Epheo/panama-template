@@ -1,11 +1,11 @@
 #!/bin/bash
 s='crudini --set /etc/mysql/my.cnf' # substitute
 $s mysqld bind-address 0.0.0.0
-$s default-storage-engine innodb
-$s innodb_file_per_table on
-$s max_connections 4096    
-$s collation-server utf8_general_ci
-$s character-set-server utf8 
+$s mysqld default-storage-engine innodb
+$s mysqld innodb_file_per_table on
+$s mysqld max_connections 4096
+$s mysqld collation-server utf8_general_ci
+$s mysqld character-set-server utf8
 
 VOLUME_HOME="/var/lib/mysql"
 
@@ -16,7 +16,7 @@ if [[ ! -d $VOLUME_HOME/mysql ]]; then
     echo "=> Done!"  
 
     /usr/bin/mysqld_safe &
-    
+
     RET=1
     while [[ RET -ne 0 ]]; do
         echo "=> Waiting for confirmation of MySQL service startup"
@@ -24,10 +24,10 @@ if [[ ! -d $VOLUME_HOME/mysql ]]; then
         mysql -uroot -e 'status'
         RET=$?
     done
-    
+
     mysql -uroot -e "CREATE USER '$MYSQL_USER'@'%' IDENTIFIED BY '$MYSQL_PASS'"
     mysql -uroot -e "GRANT ALL PRIVILEGES ON *.* TO '$MYSQL_USER'@'%' WITH GRANT OPTION"
-    
+
     echo "==================================================================="
     echo "You can now connect to this MySQL Server using:"
     echo ""
